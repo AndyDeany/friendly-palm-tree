@@ -1,6 +1,7 @@
 """Module containing classes that represent the /ferrets endpoints."""
 
 from datetime import date
+from time import sleep
 import subprocess
 
 from flask import request
@@ -87,7 +88,6 @@ class FerretsBase(Resource):
     @staticmethod
     def ferret_is_valid(ferret, search_parameters) -> bool:
         """Return whether or not the given ferret fulfils the given search parameters."""
-        print(search_parameters)
         for parameter, value in search_parameters.items():
             if getattr(ferret, parameter) != value:
                 return False
@@ -103,4 +103,5 @@ class FerretsBase(Resource):
 
     @staticmethod
     def delete():
+        sleep(5)    # For testing API's concurrent performance during blocking calls
         abort(405, message="DELETE requests are not supported for this resource.")
