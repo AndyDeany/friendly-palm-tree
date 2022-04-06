@@ -88,8 +88,9 @@ with context("/ferrets/{name} endpoint"):
         expect(response.status_code).to(equal(403))
 
     with it("should return 501 Not Implemented if a PUT request is made"):
+        new_ciri_json = {"name": "Ciri", "dob": "2019-09-13", "color": "Silver"}
         expected_message = "PUT requests are not implemented for this resource."
-        response = requests.put(BASE_URL + "/ferrets/Ciri", json={"color": "Silver"})
+        response = requests.put(BASE_URL + "/ferrets/Ciri", json=new_ciri_json)
         expect(response.json()).to(equal({"message": expected_message}))
         expect(response.status_code).to(equal(501))
 
