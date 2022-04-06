@@ -95,6 +95,6 @@ with context("/ferrets/{name} endpoint"):
 
     with it("should return 501 Not Implemented if a DELETE request is made"):
         expected_message = "DELETE requests are not implemented for this resource."
-        response = requests.delete(BASE_URL + "/ferrets/Ciri", json=noodle_json)
+        response = requests.delete(BASE_URL + "/ferrets/Ciri")
         expect(response.json()).to(equal({"message": expected_message}))
         expect(response.status_code).to(equal(501))
