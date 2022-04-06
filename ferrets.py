@@ -46,12 +46,16 @@ class Ferrets(Resource):
         abort(404, message=f"Ferret not found. No ferret with the name '{name}' exists.")
 
     @staticmethod
-    def post(*_args, **_kwargs):
+    def post(name):
         abort(405, message="POST requests are not supported for this resource.")
 
     @staticmethod
-    def put(*_args, **_kwargs):
+    def put(name):
         abort(501, message="PUT requests are not implemented for this resource.")
+
+    @staticmethod
+    def delete(name):
+        abort(501, message="DELETE requests are not implemented for this resource.")
 
 
 class FerretsBase(Resource):
