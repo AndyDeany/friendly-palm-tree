@@ -49,6 +49,10 @@ class Ferrets(Resource):
     def post(*_args, **_kwargs):
         abort(403, message="POST requests are not allowed on this resource.")
 
+    @staticmethod
+    def put(*_args, **_kwargs):
+        abort(501, message="PUT requests are not implemented for this resource.")
+
 
 class FerretsBase(Resource):
     """Class representing the base /ferrets endpoint."""
