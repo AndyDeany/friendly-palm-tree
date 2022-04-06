@@ -19,11 +19,14 @@ Jinja2==3.1.1
 lazy-object-proxy==1.7.1
 mamba==0.11.2
 MarkupSafe==2.1.1
+marshmallow==3.15.0
 mccabe==0.7.0
+packaging==21.3
 platformdirs==2.5.1
 pycodestyle==2.8.0
 pydocstyle==6.1.1
 pylint==2.13.4
+pyparsing==3.0.7
 pytz==2022.1
 requests==2.27.1
 six==1.16.0
