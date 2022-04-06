@@ -45,6 +45,10 @@ class Ferrets(Resource):
                 return {"name": ferret.name, "age": ferret.age, "color": ferret.color}, 200
         abort(404, message=f"Ferret not found. No ferret with the name '{name}' exists.")
 
+    @staticmethod
+    def post(*_args, **_kwargs):
+        abort(403, message="POST requests are not allowed on this resource.")
+
 
 class FerretsBase(Resource):
     """Class representing the base /ferrets endpoint."""
