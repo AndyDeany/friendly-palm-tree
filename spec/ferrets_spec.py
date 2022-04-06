@@ -9,6 +9,9 @@ from spec.helper import (BASE_URL,
                          get_ciri_dict, get_georgia_dict, get_slinky_dict, get_cerberus_dict)
 
 
+noodle_json = {"name": "Noodle", "dob": "2022-02-26", "color": "Silver"}
+
+
 with context("/ferrets base endpoint"):
     with it("should return all ferrets, in alphabetical order by name"):
         response = requests.get(BASE_URL + "/ferrets")
@@ -78,6 +81,12 @@ with context("/ferrets/{name} endpoint"):
         expect(response.json()).to(equal({"message": expected_message}))
         expect(response.status_code).to(equal(404))
 
+    with it("should return 403 Forbidden if a POST request is made"):
+        expected_message = "PUT requests are not allowed on this resource."
+        response = requests.post(BASE_URL + "/ferrets", json={})
+        expect(response.json()).to(equal({"message": expected_message}))
+        expect(response.status_code).to(equal(403))
+
     with it("should return 501 Not Implemented if a PUT request is made"):
         expected_message = "PUT requests are not implemented for this resource."
         response = requests.put(BASE_URL + "/ferrets/Ciri", json={"color": "Silver"})
@@ -85,7 +94,6 @@ with context("/ferrets/{name} endpoint"):
         expect(response.status_code).to(equal(501))
 
     with it("should return 501 Not Implemented if a DELETE request is made"):
-        noodle_json = {"name": "Noodle", "dob": "2022-02-26", "color": "Silver"}
         expected_message = "DELETE requests are not implemented for this resource."
         response = requests.post(BASE_URL + "/ferrets/Ciri", json=noodle_json)
         expect(response.json()).to(equal({"message": expected_message}))
