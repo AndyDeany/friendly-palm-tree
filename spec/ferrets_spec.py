@@ -1,30 +1,11 @@
 """File containing unit tests for the functionality of the /ferrets endpoint."""
+# pylint: disable=invalid-name
 
-from datetime import date
-
-from expects import *
+from expects import expect
 from mamba import context, it
 import requests
 
-
-BASE_URL = "http://127.0.01:5000"
-
-
-def make_ferret_dict(name, dob, color):
-    """Create the expect ferret dict for the ferret with the given information."""
-    today = date.today()
-    return {
-        "name": name,
-        "age": today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day)),
-        "color": color,
-    }
-
-
-# Create dicts when requests are made (instead of now) so age is accurate.
-get_ciri_dict = lambda: make_ferret_dict("Ciri", date(2019, 9, 13), "Albino")
-get_slinky_dict = lambda: make_ferret_dict("Slinky", date(2021, 4, 6), "Black Sable")
-get_cerberus_dict = lambda: make_ferret_dict("Cerberus", date(2015, 12, 31), "Chocolate")
-get_georgia_dict = lambda: make_ferret_dict("Georgia", date(2017, 1, 1), "Chocolate")
+from spec.helper import *
 
 
 with context("/ferrets base endpoint"):
@@ -93,7 +74,7 @@ with context("/ferrets/{name} endpoint"):
 
     with it("should return an appropriate 404 message if a requested ferret can't be found"):
         expected_message = "Ferret not found. No ferret with the name 'Noodle' exists."
-        response = requests.get(BASE_URL + f"/ferrets/Noodle")
+        response = requests.get(BASE_URL + "/ferrets/Noodle")
         expect(response.content).to_equal({"message": expected_message})
         expect(response.status_code).to_equal(404)
 
