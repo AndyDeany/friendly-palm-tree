@@ -50,9 +50,8 @@ with context("/ferrets base endpoint"):
         expect(response.status_code).to(equal(403))
 
     with it("should return 403 Forbidden if a DELETE request is made"):
-        noodle_json = {"name": "Noodle", "dob": "2022-02-26", "color": "Silver"}
         expected_message = "DELETE requests are not allowed on this resource."
-        response = requests.delete(BASE_URL + "/ferrets", json=noodle_json)
+        response = requests.delete(BASE_URL + "/ferrets")
         expect(response.json()).to(equal({"message": expected_message}))
         expect(response.status_code).to(equal(403))
 
@@ -86,6 +85,7 @@ with context("/ferrets/{name} endpoint"):
         expect(response.status_code).to(equal(501))
 
     with it("should return 501 Not Implemented if a DELETE request is made"):
+        noodle_json = {"name": "Noodle", "dob": "2022-02-26", "color": "Silver"}
         expected_message = "DELETE requests are not implemented for this resource."
         response = requests.post(BASE_URL + "/ferrets/Ciri", json=noodle_json)
         expect(response.json()).to(equal({"message": expected_message}))
