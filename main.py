@@ -3,7 +3,7 @@
 from datetime import date
 import subprocess
 
-from flask import Flask
+from flask import Flask, request
 from flask_restful import Resource, Api, abort
 
 
@@ -44,17 +44,43 @@ class Ferrets(Resource):
                 return {"name": ferret.name, "age": ferret.age, "color": ferret.color}, 200
         abort(404, message=f"Ferret not found. No ferret with the name '{name}' exists.")
 
+from marshmallow import Schema, fields
+class FerretFilterSchema(Schema):
+    color = fields.Str()
+
+
 
 class FerretsBase(Resource):
     """Class representing the base /ferrets endpoint."""
 
+    ferret_filter_schema = FerretFilterSchema()
+
     def get(self):
         """Get the information on all known ferrets."""
+        parameters = request.args
+        errors = self.ferret_filter_schema.validate(parameters)
+        parameters = parameters.to_dict()
+        if errors:
+            message = "Bad Request. "
+            for error in errors:
+                message += f"Unknown parameter '{error}'."
+            abort(400, message=message)
+
         ferrets = []
         for ferret in Ferrets.all_ferrets:
-            ferrets.append({"name": ferret.name, "age": ferret.age, "color": ferret.color})
+            if self.ferret_is_valid(ferret, parameters):
+                ferrets.append({"name": ferret.name, "age": ferret.age, "color": ferret.color})
         ferrets.sort(key=lambda f: f["name"])
         return {"ferrets": ferrets}
+
+    @staticmethod
+    def ferret_is_valid(ferret, search_parameters) -> bool:
+        """Return whether or not the given ferret fulfils the given search parameters."""
+        print(search_parameters)
+        for parameter, value in search_parameters.items():
+            if getattr(ferret, parameter) != value:
+                return False
+        return True
 
 
 if __name__ == '__main__':
