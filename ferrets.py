@@ -73,9 +73,9 @@ class FerretsBase(Resource):
         errors = self.ferret_filter_schema.validate(parameters)
         parameters = parameters.to_dict()
         if errors:
-            message = "Bad Request. "
+            message = "Bad Request."
             for error in errors:
-                message += f"Unknown parameter '{error}'."
+                message += f" Unknown parameter '{error}'."
             abort(400, message=message)
 
         ferrets = []
