@@ -48,6 +48,14 @@ class Ferrets(Resource):
 class FerretsBase(Resource):
     """Class representing the base /ferrets endpoint."""
 
+    def get(self):
+        """Get the information on all known ferrets."""
+        ferrets = []
+        for ferret in Ferrets.all_ferrets:
+            ferrets.append({"name": ferret.name, "age": ferret.age, "color": ferret.color})
+        ferrets.sort(key=lambda f: f["name"])
+        return {"ferrets": ferrets}
+
 
 if __name__ == '__main__':
     app = Flask(__name__)
