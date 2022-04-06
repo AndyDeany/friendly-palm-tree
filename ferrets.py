@@ -47,7 +47,7 @@ class Ferrets(Resource):
 
     @staticmethod
     def post(*_args, **_kwargs):
-        abort(403, message="POST requests are not allowed on this resource.")
+        abort(405, message="POST requests are not supported for this resource.")
 
     @staticmethod
     def put(*_args, **_kwargs):
@@ -95,8 +95,8 @@ class FerretsBase(Resource):
 
     @staticmethod
     def put():
-        abort(403, message="PUT requests are not allowed on this resource.")
+        abort(405, message="PUT requests are not supported for this resource.")
 
     @staticmethod
     def delete():
-        abort(403, message="DELETE requests are not allowed on this resource.")
+        abort(405, message="DELETE requests are not supported for this resource.")
