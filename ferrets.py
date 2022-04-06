@@ -80,3 +80,15 @@ class FerretsBase(Resource):
             if getattr(ferret, parameter) != value:
                 return False
         return True
+
+    @staticmethod
+    def post():
+        abort(501, message="POST requests are not implemented for this resource.")
+
+    @staticmethod
+    def put():
+        abort(403, message="PUT requests are not allowed on this resource.")
+
+    @staticmethod
+    def delete():
+        abort(403, message="DELETE requests are not allowed on this resource.")
