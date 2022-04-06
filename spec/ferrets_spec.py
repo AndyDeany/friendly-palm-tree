@@ -82,8 +82,8 @@ with context("/ferrets/{name} endpoint"):
         expect(response.status_code).to(equal(404))
 
     with it("should return 403 Forbidden if a POST request is made"):
-        expected_message = "PUT requests are not allowed on this resource."
-        response = requests.post(BASE_URL + "/ferrets", json={})
+        expected_message = "POST requests are not allowed on this resource."
+        response = requests.post(BASE_URL + "/ferrets/Ciri", json={})
         expect(response.json()).to(equal({"message": expected_message}))
         expect(response.status_code).to(equal(403))
 
