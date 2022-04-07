@@ -60,18 +60,10 @@ def before_request():
         abort(503, message="The API is offline.")
 
 
-@app.after_request
-def after_request(response):
-    """Teardown executed after every request, excluding those that throw an exception."""
-    GracefulShutdown.remove_request()
-    return response
-
-
 @app.teardown_request
-def teardown_request(error=None):
+def teardown_request(_error=None):
     """Teardown executed after every request, including those that throw an exception."""
-    if error is not None:
-        GracefulShutdown.remove_request()  # Ensure requests that error are also removed
+    GracefulShutdown.remove_request()  # Ensure requests that error are also removed
 
 
 @app.errorhandler(404)
