@@ -48,26 +48,29 @@ class GracefulShutdown:
 signal.signal(signal.SIGINT, GracefulShutdown.handle_sigint)
 
 
+app = Flask(__name__)
+
+
+@app.before_request
+def before_request():
+    GracefulShutdown.add_request()
+    if GracefulShutdown.shutdown_requested:
+        abort(503, message="The API is offline.")
+
+
+@app.after_request
+def after_request(response):
+    GracefulShutdown.remove_request()
+    return response
+
+
+@app.teardown_request
+def teardown_request(error=None):
+    if error is not None:
+        GracefulShutdown.remove_request()  # Ensure requests that error are also removed
+
+
 if __name__ == '__main__':
-    app = Flask(__name__)
-
-    @app.before_request
-    def before_request():
-        GracefulShutdown.add_request()
-        if GracefulShutdown.shutdown_requested:
-            abort(503, message="The API is offline.")
-
-    @app.after_request
-    def after_request(response):
-        GracefulShutdown.remove_request()
-        return response
-
-    @app.teardown_request
-    def teardown_request(error=None):
-        if error is not None:
-            GracefulShutdown.remove_request()   # Ensure requests that error are also removed
-
-
     api = Api(app)
     api.add_resource(FerretsBase, "/ferrets")
     api.add_resource(Ferrets, "/ferrets/<name>")
