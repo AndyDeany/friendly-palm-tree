@@ -1,5 +1,6 @@
 """Module containing the main API."""
 
+import os
 import sys
 import signal
 from time import time, sleep
@@ -33,9 +34,9 @@ class GracefulShutdown:
         while time() - start_time < cls.MAX_TIMEOUT:    # Wait for ongoing requests to finish
             if cls.current_requests == 0:
                 sleep(1)    # Ensure responses have time to be returned
-                sys.exit(0)
+                cls.shutdown()
             sleep(1)
-        sys.exit(0)     # Exit after MAX_TIMEOUT regardless
+        cls.shutdown()  # Exit after MAX_TIMEOUT regardless
 
     @classmethod
     def add_request(cls):
@@ -48,6 +49,14 @@ class GracefulShutdown:
         """Track a completed request."""
         with cls.lock:
             cls.current_requests -= 1
+
+    @classmethod
+    def shutdown(cls):
+        """Shut down the API."""
+        try:
+            os.kill(os.getpid(), signal.SIGKILL)
+        except AttributeError:  # Windows
+            sys.exit(0)
 
 
 signal.signal(signal.SIGINT, GracefulShutdown.handle_sigint)
