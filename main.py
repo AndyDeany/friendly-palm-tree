@@ -3,6 +3,7 @@
 import sys
 import signal
 from time import time, sleep
+from threading import Lock
 
 from flask import Flask
 from flask_restful import Api, abort
@@ -17,7 +18,8 @@ class GracefulShutdown:
     MAX_TIMEOUT = 60
 
     shutdown_requested = False
-    current_requests = []   # Thread safe counting of current requests
+    current_requests = 0
+    lock = Lock()
 
     @classmethod
     def handle_sigint(cls, _signal, _frame):
@@ -29,7 +31,7 @@ class GracefulShutdown:
         cls.shutdown_requested = True   # Stop accepting new requests
         start_time = time()
         while time() - start_time < cls.MAX_TIMEOUT:    # Wait for ongoing requests to finish
-            if not cls.current_requests:
+            if cls.current_requests == 0:
                 sleep(1)    # Ensure responses have time to be returned
                 sys.exit(0)
             sleep(1)
@@ -38,12 +40,14 @@ class GracefulShutdown:
     @classmethod
     def add_request(cls):
         """Track a new request."""
-        cls.current_requests.append(0)
+        with cls.lock:
+            cls.current_requests += 1
 
     @classmethod
     def remove_request(cls):
         """Track a completed request."""
-        cls.current_requests.pop()
+        with cls.lock:
+            cls.current_requests -= 1
 
 
 signal.signal(signal.SIGINT, GracefulShutdown.handle_sigint)
