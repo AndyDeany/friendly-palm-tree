@@ -1,4 +1,4 @@
-### Running the API and unit tests
+### Running the API and tests
 * Clone the repository.
 * Create a Python virtual environment in the main folder of the repo (`python -m venv venv`).
 * Activate this virtual environment
