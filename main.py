@@ -20,7 +20,7 @@ class GracefulShutdown:
     current_requests = []   # Thread safe counting of current requests
 
     @classmethod
-    def handle_sigint(cls, sig, frame):
+    def handle_sigint(cls, _signal, _frame):
         """Handle a SIGINT command by finishing serving ongoing requests, then shutting down."""
         if cls.shutdown_requested:  # Check shutdown isn't already in progress
             return
@@ -54,6 +54,7 @@ app = Flask(__name__)
 
 @app.before_request
 def before_request():
+    """Setup executed before every request."""
     GracefulShutdown.add_request()
     if GracefulShutdown.shutdown_requested:
         abort(503, message="The API is offline.")
@@ -61,28 +62,30 @@ def before_request():
 
 @app.after_request
 def after_request(response):
+    """Teardown executed after every request, excluding those that throw an exception."""
     GracefulShutdown.remove_request()
     return response
 
 
 @app.teardown_request
 def teardown_request(error=None):
+    """Teardown executed after every request, including those that throw an exception."""
     if error is not None:
         GracefulShutdown.remove_request()  # Ensure requests that error are also removed
 
 
 @app.errorhandler(404)
-def not_found(error):
+def not_found(_error):
     return {"message": "The URL could not be found. Try '/ferrets'."}, 404
 
 
 class EnhancedApi(Api):
     """Class enhancing the basic flask_restful.Api class."""
 
-    def handle_error(self, error):
+    def handle_error(self, e):
         """Handle errors thrown by API calls."""
-        if isinstance(error, HTTPException):
-            return super().handle_error(error)  # Handle abort() calls normally
+        if isinstance(e, HTTPException):
+            return super().handle_error(e)  # Handle abort() calls normally
         # And catch other thrown Exceptions to give a custom 500 payload.
         return {"message": "There was an Internal Server Error. Oh no."}, 500
 

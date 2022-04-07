@@ -21,7 +21,8 @@ class Ferret:
     def age(self):
         """Property containing the current age of the ferret."""
         try:    # Calling arbritrary external executable :)
-            unix_time_now = int(subprocess.run(["date", "+%s"], stdout=subprocess.PIPE).stdout)
+            process = subprocess.run(["date", "+%s"], stdout=subprocess.PIPE, check=True)
+            unix_time_now = int(process.stdout)
             today = date.fromtimestamp(int(unix_time_now))
         except FileNotFoundError:   # Sadly doesn't work on Windows
             today = date.today()
@@ -63,6 +64,7 @@ class FerretsBase(Resource):
     """Class representing the base /ferrets endpoint."""
 
     class FerretFilterSchema(Schema):
+        """Schema for validating parameters passed for filtering all ferrets from /ferrets."""
         color = fields.Str()
 
     ferret_filter_schema = FerretFilterSchema()

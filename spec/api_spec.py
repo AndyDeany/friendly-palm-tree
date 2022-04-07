@@ -6,7 +6,7 @@ from expects import expect, equal, be_below
 from mamba import context, it
 import requests
 
-from spec.helper import *
+from spec.helper import BASE_URL, get_ciri_dict
 
 
 response_dict = {}  # For passing info between threads
