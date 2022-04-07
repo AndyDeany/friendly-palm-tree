@@ -1,6 +1,6 @@
 """File containing unit tests for functionality of the API as a whole."""
 from threading import Thread
-from time import time
+from time import time, sleep
 
 from expects import expect, equal, be_below
 from mamba import context, it
@@ -23,11 +23,12 @@ with context("simultaenous requests"):
         blocking_process = Thread(target=make_blocking_request)
         blocking_process.start()
 
+        sleep(1)    # Ensure the first request has time to start
         response = requests.get(BASE_URL + "/ferrets/Ciri")
         expect(response.json()).to(equal(get_ciri_dict()))
         expect(response.status_code).to(equal(200))
         # Check that the request was completed whilst the blocking request was ongoing (within 1s)
-        expect(time() - start_time).to(be_below(1))
+        expect(time() - start_time).to(be_below(2))
 
         blocking_process.join()
         slow_response = response_dict["response"]
