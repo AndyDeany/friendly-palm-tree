@@ -6,6 +6,7 @@ from time import time, sleep
 
 from flask import Flask
 from flask_restful import Api, abort
+from werkzeug.exceptions import HTTPException
 
 from ferrets import FerretsBase, Ferrets
 
@@ -70,8 +71,24 @@ def teardown_request(error=None):
         GracefulShutdown.remove_request()  # Ensure requests that error are also removed
 
 
+@app.errorhandler(404)
+def not_found(error):
+    return {"message": "The URL could not be found. Try '/ferrets'."}, 404
+
+
+class EnhancedApi(Api):
+    """Class enhancing the basic flask_restful.Api class."""
+
+    def handle_error(self, error):
+        """Handle errors thrown by API calls."""
+        if isinstance(error, HTTPException):
+            return super().handle_error(error)  # Handle abort() calls normally
+        # And catch other thrown Exceptions to give a custom 500 payload.
+        return {"message": "There was an Internal Server Error. Oh no."}, 500
+
+
 if __name__ == '__main__':
-    api = Api(app)
+    api = EnhancedApi(app)
     api.add_resource(FerretsBase, "/ferrets")
     api.add_resource(Ferrets, "/ferrets/<name>")
     app.run(debug=True)
