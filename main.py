@@ -54,7 +54,7 @@ app = Flask(__name__)
 
 @app.before_request
 def before_request():
-    """Setup before every request."""
+    """Set up before every request."""
     GracefulShutdown.add_request()
     if GracefulShutdown.shutdown_requested:
         abort(503, message="The API is offline.")
@@ -62,7 +62,7 @@ def before_request():
 
 @app.teardown_request
 def teardown_request(_error=None):
-    """Teardown after every request, including those that throw an exception."""
+    """Tear down after every request, including those that throw an exception."""
     GracefulShutdown.remove_request()  # Ensure requests that error are also removed
 
 
